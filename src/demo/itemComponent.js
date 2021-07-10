@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function(props){
+export default function ItemComponent(props){
     return (
         <li>
             姓名：{props.name},
