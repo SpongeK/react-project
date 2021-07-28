@@ -1,0 +1,21 @@
+.pagination-wrap{
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+}
+.pagination-wrap .page-item{
+    margin: 0 5px;
+    min-width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+}
+.pagination-wrap .page-item.active{
+    border-color: hotpink;
+}
+.pagination-wrap .page-item.disabled{
+    background: #ccc;
+    cursor:not-allowed;
+}
