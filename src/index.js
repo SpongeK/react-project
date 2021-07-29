@@ -13,9 +13,14 @@ const params = {
     total: 100,
     pageSize: 10
 }
+function changePage(pagination){
+    console.log(pagination)
+    this.params.current = pagination.pageNum
+    this.params.pageSize = pagination.pageSize
+}
 ReactDOM.render(
   <React.StrictMode>
-    <Pagination {...params}></Pagination>
+    <Pagination {...params} onChange={ changePage }></Pagination>
   </React.StrictMode>,
   document.getElementById('root')
 );

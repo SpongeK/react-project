@@ -10,70 +10,111 @@ export default class Pagination extends React.Component{
     constructor(props){
         super(props)
         this.state = {
+            panelNum: 5,
             current: props.current || 1,
             total: props.total || 100,
             pageSize: props.pageSize || 10,
-            pageNum: Math.floor( props.total / props.pageSize )+1
+            // pageNum: Math.floor( props.total / props.pageSize )+1
         }
-        // this.getPageNum()
+        
     }
     
     getPageNum(){
         console.log('getPageNum', this.state)
-        const num = Math.floor( this.state.total / this.state.pageSize )+1
-        this.setState({
-            pageNum: num
-        }, () => {
-            console.log('change', this.state)
-        })
+        const num = Math.ceil( this.state.total / this.state.pageSize )
+        console.log('pageNum', num)
+        return num || 1
     }
 
-    handleClick = (e) => {
-       const { index } = e.currentTarget.dataset
+    handleClick = (index) => {
+       if(this.state.current === index){
+           return
+       }
        this.setState({
-           current: Number(index)+1
+           current: index
        })
     }
-    handleDownPage = () => {
-        const minPage = this.state.current - 1
+    // handleDownPage = () => {
+    //     const minPage = this.state.current - 1
+    //     if(minPage < 1){
+    //         return
+    //     }
+    //     this.setState({
+    //         current: minPage > 0 ? minPage : 1
+    //     })
+    // }
+    // handleUpPage = () => {
+    //     const maxPage = this.state.current + 1
+    //     if(maxPage)
+    //     this.setState({
+    //         current: maxPage > this.state.pageNum ? this.state.pageNum : maxPage
+    //     })
+    // }
+    toPage(cur){
+        if(this.state.current === cur){
+            return
+        }
         this.setState({
-            current: minPage > 0 ? minPage : 1
+            current: cur
+        })
+        // this.props.onChange && this.props.onChange({
+        //     pageNum: cur,
+        //     pageSize: this.state.pageSize
+        // })
+    }
+    changeSize(e){
+        const size = e.target.value
+        if(this.state.pageSize === size){
+             return
+        }
+        this.setState({
+            pageSize: size,
+            current: 1
         })
     }
-    handleUpPage = () => {
-        const maxPage = this.state.current + 1
-        this.setState({
-            current: maxPage > this.state.pageNum ? this.state.pageNum : maxPage
-        })
+    getMin(totalPage){
+        var min = this.state.current - Math.floor( this.state.panelNum / 2)
+        const maxMin = totalPage - this.state.panelNum
+        if(maxMin + 1 < min ){
+            min = maxMin +1
+        }
+        if(min < 1){
+            min = 1
+        }
+        return min
+    }
+    getMax(min, totalPage){
+        var max = min + this.state.panelNum - 1
+        if(max > totalPage){
+            max = totalPage
+        }
+        return max
     }
     render(){
-        console.log('render')
+        const pageNum = this.getPageNum()
+        const minPage = this.getMin(pageNum)
+        const maxPage = this.getMax(minPage, pageNum)
+        console.log('render', pageNum, minPage, maxPage)
         let numItem = []
         
-        for(let i =0; i<this.state.pageNum;i++){
+        for(let i =minPage; i<=maxPage;i++){
             let className = 'page-item'
-            if(this.state.current === i+1){
+            if(this.state.current === i){
                 className += ' active'
             }
-            numItem.push(<div className={className} key={i} data-index={i} onClick={this.handleClick}>{i+1}</div>)     
-        }
-        let downBtnClassName = 'page-item',upBtnClassName = 'page-item'
-        if(this.state.current === 1){
-            downBtnClassName += ' disabled'
-        }else if(this.state.current === this.state.pageNum){
-            upBtnClassName += ' disabled'
+            numItem.push(<div className={className} key={i} data-index={i} onClick={() => {this.handleClick(i)}}>{i}</div>)     
         }
         return (
             <div className="pagination-wrap">
-                <div className={downBtnClassName} onClick={ this.handleDownPage }>&lt;</div>
+                <div className={this.state.current === 1 ? 'page-item disabled' : 'page-item'} onClick={() => this.toPage(this.state.current - 1 < 1 ? 1 : this.state.current - 1) }>&lt;</div>
                 { numItem }
-                <div className={upBtnClassName} onClick={ this.handleUpPage }>&gt;</div>
+                <div className={this.state.current === pageNum ? 'page-item disabled' : 'page-item'} onClick={() => this.toPage(this.state.current + 1 > pageNum ? pageNum : this.state.current + 1) }>&gt;</div>
                 <div>
-                    <select>
-                        <option>10条/页</option>
-                        <option>20条/页</option>
-                        <option>30条/页</option>
-                        <option>40条/页</option>
+                    <select onChange={ (e) => this.changeSize(e)}>
+                        <option value="10">10条/页</option>
+                        <option value="20">20条/页</option>
+                        <option value="30">30条/页</option>
+                        <option value="40">40条/页</option>
                     </select>
                 </div>
             </div>
