@@ -15,15 +15,26 @@ const params = {
 }
 function changePage(pagination){
     console.log(pagination)
-    this.params.current = pagination.pageNum
-    this.params.pageSize = pagination.pageSize
+    params.current = pagination.pageNum
+    params.pageSize = pagination.pageSize
+    renderComponent()
 }
-ReactDOM.render(
-  <React.StrictMode>
-    <Pagination {...params} onChange={ changePage }></Pagination>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+
+function renderComponent(){
+    ReactDOM.render(
+        <React.StrictMode>
+          <Pagination {...params} onChange={ changePage }></Pagination>
+        </React.StrictMode>,
+        document.getElementById('root')
+      );
+}
+renderComponent()
+// ReactDOM.render(
+//   <React.StrictMode>
+//     <Pagination {...params} onChange={ changePage }></Pagination>
+//   </React.StrictMode>,
+//   document.getElementById('root')
+// );
 
 // // If you want to start measuring performance in your app, pass a function
 // // to log results (for example: reportWebVitals(console.log))
