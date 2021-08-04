@@ -1,80 +1,26 @@
 import React from 'react'
 import './pagination.css'
-export default class Pagination extends React.Component{
-    constructor(props){
-        super(props)
-        this.state = {
-            panelNum: 5
+export default function Pagination(props){
+
+    const panelNum = 5
+    const pageNum = getPageNum(props)
+    const minNum = getMin(pageNum, panelNum, props)
+    const maxNum = getMax(minNum, pageNum, panelNum, props)
+    let numItem = []
+    for(let i =minNum; i<=maxNum;i++){
+        let className = 'page-item'
+        if(props.current === i){
+            className += ' active'
         }
-        
+        numItem.push(<div className={className} key={i} data-index={i} onClick={() => toPage(i, props)}>{i}</div>)     
     }
-    
-    getPageNum(){
-        console.log('getPageNum', this.props)
-        if(!this.props.total){
-            return 1
-        }
-        const num = Math.ceil( this.props.total / this.props.pageSize )
-        console.log('pageNum', num)
-        return num
-    }
-    getMin(totalPage){
-        var min = this.props.current - Math.floor( this.state.panelNum / 2)
-        const maxMin = totalPage + 1 - this.state.panelNum
-        if(maxMin > 0 && min > maxMin){
-            min = maxMin
-        } else if( min < 1){
-            min = 1
-        }
-        return min
-    }
-    getMax(min, totalPage){
-        var max = min + this.state.panelNum - 1
-        if(max > totalPage){
-            max = totalPage
-        }
-        return max
-    }
-    toPage(cur){
-        if(this.props.current === cur){
-            return
-        }
-        this.props.onChange && this.props.onChange({
-            pageNum: cur,
-            pageSize: this.props.pageSize
-        })
-    }
-    changeSize(e){
-        const size = e.target.value
-        if(this.state.pageSize === size){
-             return
-        }
-        this.props.onChange && this.props.onChange({
-            pageNum: 1,
-            pageSize: size
-        })
-    }
-    
-    render(){
-        const pageNum = this.getPageNum()
-        const minPage = this.getMin(pageNum)
-        const maxPage = this.getMax(minPage, pageNum)
-        console.log('render', pageNum, minPage, maxPage)
-        let numItem = []
-        for(let i =minPage; i<=maxPage;i++){
-            let className = 'page-item'
-            if(this.props.current === i){
-                className += ' active'
-            }
-            numItem.push(<div className={className} key={i} data-index={i} onClick={() => this.toPage(i)}>{i}</div>)     
-        }
-        return (
+    return(
             <div className="pagination-wrap">
-                <div className={this.props.current === 1 ? 'page-item disabled' : 'page-item'} onClick={() => this.toPage(this.props.current - 1 < 1 ? 1 : this.props.current - 1) }>&lt;</div>
+                <div className={props.current === 1 ? 'page-item disabled' : 'page-item'} onClick={() => toPage(props.current - 1 < 1 ? 1 : props.current - 1, props) }>&lt;</div>
                 { numItem }
-                <div className={this.props.current === pageNum ? 'page-item disabled' : 'page-item'} onClick={() => this.toPage(this.props.current + 1 > pageNum ? pageNum : this.props.current + 1) }>&gt;</div>
+                <div className={props.current === pageNum ? 'page-item disabled' : 'page-item'} onClick={() => toPage(props.current + 1 > pageNum ? pageNum : props.current + 1, props) }>&gt;</div>
                 <div>
-                    <select onChange={ (e) => this.changeSize(e)}>
+                    <select onChange={ (e) => changeSize(e, props)}>
                         <option value="10">10条/页</option>
                         <option value="20">20条/页</option>
                         <option value="30">30条/页</option>
@@ -82,6 +28,51 @@ export default class Pagination extends React.Component{
                     </select>
                 </div>
             </div>
-        )
+    );
+}
+    
+function getPageNum(props){
+    console.log('getPageNum', props)
+    if(!props.total){
+        return 1
     }
+    const num = Math.ceil( props.total / props.pageSize )
+    console.log('pageNum', num)
+    return num
+}
+function getMin(totalPage, panelNum, props){
+    var min = props.current - Math.floor( panelNum / 2)
+    const maxMin = totalPage + 1 - panelNum
+    if(maxMin > 0 && min > maxMin){
+        min = maxMin
+    } else if( min < 1){
+        min = 1
+    }
+    return min
+}
+function getMax(min, totalPage, panelNum, props){
+    var max = min + panelNum - 1
+    if(max > totalPage){
+        max = totalPage
+    }
+    return max
+}
+function toPage(cur, props){
+    if(props.current === cur){
+        return
+    }
+    props.onChange && props.onChange({
+        pageNum: cur,
+        pageSize: props.pageSize
+    })
+}
+function changeSize(e, props){
+    const size = e.target.value
+    if(props.pageSize === size){
+            return
+    }
+    props.onChange && props.onChange({
+        pageNum: 1,
+        pageSize: size
+    })
 }
