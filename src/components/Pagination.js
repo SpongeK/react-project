@@ -6,6 +6,52 @@ export default function Pagination(props){
     const pageNum = getPageNum(props)
     const minNum = getMin(pageNum, panelNum, props)
     const maxNum = getMax(minNum, pageNum, panelNum, props)
+
+    function getPageNum(props){
+        console.log('getPageNum', props)
+        if(!props.total){
+            return 1
+        }
+        const num = Math.ceil( props.total / props.pageSize )
+        console.log('pageNum', num)
+        return num
+    }
+    function getMin(totalPage, panelNum, props){
+        var min = props.current - Math.floor( panelNum / 2)
+        const maxMin = totalPage + 1 - panelNum
+        if(maxMin > 0 && min > maxMin){
+            min = maxMin
+        } else if( min < 1){
+            min = 1
+        }
+        return min
+    }
+    function getMax(min, totalPage, panelNum, props){
+        var max = min + panelNum - 1
+        if(max > totalPage){
+            max = totalPage
+        }
+        return max
+    }
+    function toPage(cur, props){
+        if(props.current === cur){
+            return
+        }
+        props.onChange && props.onChange({
+            pageNum: cur,
+            pageSize: props.pageSize
+        })
+    }
+    function changeSize(e, props){
+        const size = e.target.value
+        if(props.pageSize === size){
+                return
+        }
+        props.onChange && props.onChange({
+            pageNum: 1,
+            pageSize: size
+        })
+    }
     let numItem = []
     for(let i =minNum; i<=maxNum;i++){
         let className = 'page-item'
@@ -31,48 +77,4 @@ export default function Pagination(props){
     );
 }
     
-function getPageNum(props){
-    console.log('getPageNum', props)
-    if(!props.total){
-        return 1
-    }
-    const num = Math.ceil( props.total / props.pageSize )
-    console.log('pageNum', num)
-    return num
-}
-function getMin(totalPage, panelNum, props){
-    var min = props.current - Math.floor( panelNum / 2)
-    const maxMin = totalPage + 1 - panelNum
-    if(maxMin > 0 && min > maxMin){
-        min = maxMin
-    } else if( min < 1){
-        min = 1
-    }
-    return min
-}
-function getMax(min, totalPage, panelNum, props){
-    var max = min + panelNum - 1
-    if(max > totalPage){
-        max = totalPage
-    }
-    return max
-}
-function toPage(cur, props){
-    if(props.current === cur){
-        return
-    }
-    props.onChange && props.onChange({
-        pageNum: cur,
-        pageSize: props.pageSize
-    })
-}
-function changeSize(e, props){
-    const size = e.target.value
-    if(props.pageSize === size){
-            return
-    }
-    props.onChange && props.onChange({
-        pageNum: 1,
-        pageSize: size
-    })
-}
+
